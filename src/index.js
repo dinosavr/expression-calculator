@@ -193,7 +193,7 @@ function tryAction (firstValue, secondValue, thirdValue, action){
     if(typeof(thirdValue) == 'string') thirdValue = thirdValue.replace('m','-');
 
       if((secondValue == '*') && (action == '/')) answer = (parseFloat(firstValue) * parseFloat(thirdValue));
-      if((secondValue == '/') && (action == '/') && parseFloat(thirdValue) == 0) throw "TypeError: Devision by zero.";
+      if((secondValue == '/') && (action == '/') && parseFloat(thirdValue) == 0) throw "TypeError: Division by zero.";
       if((secondValue == '/') && (action == '/')) answer = (parseFloat(firstValue) / parseFloat(thirdValue));
       if((secondValue == '+') && (action == '+')) answer = (parseFloat(firstValue) + parseFloat(thirdValue));
       if((secondValue == '-') && (action == '+')) answer = (parseFloat(firstValue) - parseFloat(thirdValue));
