@@ -7,26 +7,17 @@ function expressionCalculator(expr) {
     // write your solution here
     // rewrite action / *
 
-    let result;       
-    let debug = false;
-
-    if(debug) console.log("Start expr = " + expr);     
+    let result;           
 
     checkBrackets(expr);
     
     while (!checkSolvesReady(expr)) { // выводит 0, затем 1, затем 2
-        if(debug) console.log('EXPR befor  = ' + expr);
         expr = getSimpleExpr(expr);
-        if(debug) console.log('EXPR after  = ' + expr);
       }
     
       if(typeof(expr) == 'string') expr = expr.replace('m','-');
 
-      result = parseFloat(expr);
-      console.log('RESULT = ' + result);
-      // getSimpleExpr(expr);
-
-    // countSimpleExpr(expr);
+      result = parseFloat(expr);    
 
     return result;
 }
@@ -46,30 +37,21 @@ function getSimpleExpr(expr){
     
 
      for (var i = 0; i < expr.length; i++) {
-        // currExpr = currExpr + expr.charAt(i);
         
         if(expr.charAt(i) == STARTBRACKET) {
             currExpr = currExpr + simpleExp; 
-            if(debug) console.log("CurrExpr = " + currExpr);     
             simpleExp = '';
         }
         
         simpleExp = simpleExp + expr.charAt(i);
 
         if(expr.charAt(i) == ENDBRACKET) {
-        if(debug) console.log("simpleExp = " + simpleExp);     
         simpleExp = countSimpleExpr(simpleExp);   
-        if(debug) console.log("CountSimpleExp = " + simpleExp);     
         currExpr = currExpr + simpleExp + getLastPartExpr(i+1, expr);
-        if(debug) console.log("NewCurrExpr = " + currExpr);  
         i = expr.length + 1;         
-        // console.log("NewCurrExpr + Last Part = " + currExpr + getLastPartExpr(i+1, expr));           
-        // expr = currExpr + getLastPartExpr(i, expr);        
         }
 
         if(i == expr.length-1) currExpr = countSimpleExpr(simpleExp);   
-        // if(i == expr.length) console.log("Final expr = " + expr);     
-        // console.log("Final NewCurrExpr = " + currExpr);     
 }
 
 return currExpr;
@@ -92,17 +74,14 @@ function countSimpleExpr(expr)             {
     
     let debug = false;
     
-tempExpressionArray = stringToArray(expr);
-    
+tempExpressionArray = stringToArray(expr);    
 tempExpressionArray = actionToArray(tempExpressionArray, DIVSYMOBL);    
 tempExpressionArray = filterArray(tempExpressionArray);      
-if (debug) console.log("filterArray apply " + tempExpressionArray);        
 
 tempExpressionArray = actionToArray(tempExpressionArray, ADDSYMBOL);    
 tempExpressionArray = filterArray(tempExpressionArray);       
 
 result = parseFloat(tempExpressionArray[0]);
-if (debug) console.log("Answer = " + result);    
 
 if(result < 0) result = 'm'+(-result);
 
@@ -127,7 +106,6 @@ function checkSolvesReady(expr) {
 
     let ready=true;
     let str = expr;    
-    let debug = false;
 
     for (var i = 0; i < str.length; i++) {
     if (str[i] === STARTBRACKET) ready=false;
@@ -136,12 +114,9 @@ function checkSolvesReady(expr) {
     if (str[i] === DIVSYMOBL) ready=false;
     if (str[i] === ADDSYMBOL) ready=false;
     if (str[i] === SUBSYMBOL) ready=false;
-    // if ((str[i] === SUBSYMBOL) && str.split(SUBSYMBOL).length == 1) console.log('Check minus: ' + str);
 
     }
 
-    if(debug) console.log('Check expr = ' + expr);
-    if(debug) console.log('Check answer = ' + ready);
     return ready;
 }
 
@@ -163,22 +138,14 @@ function stringToArray(expr){
 
     tempExpression = normalizeStringExpr(expr);
     tempExpressionArray = tempExpression.split(splitSymbol);
-    if (debug) console.log("tempExpressionToArray = " + tempExpressionArray); 
     
     return tempExpressionArray;
 }
 
 function normalizeStringExpr(expr){
 
-    let debug = false;
-
-    if (debug)  console.log("Get Simple expr = " + expr);
     tempExpression = expr.replace(/\s/g, '');    
-    if (debug)  console.log("tempExpression1 = " + tempExpression);
     tempExpression = tempExpression.replace(/[\()]/g, "").replace(/[\)]/g, "").replace(/\+/g, " + ").replace(/\-/g, " - ").replace(/\*/g, " * ").replace(/[\/)]/g, " / ");
-    if (debug)  console.log("tempExpression2 = " + tempExpression);
-    // tempExpression = expr.replace(ADDSYMBOL, '');
-    // tempExpression = expr.replace(/\+/g, " + ");
 
     return tempExpression;
 }
@@ -186,8 +153,6 @@ function normalizeStringExpr(expr){
 function tryAction (firstValue, secondValue, thirdValue, action){
 
     let answer = null;
-
-    // rewrite action / *
 
     if(typeof(firstValue) == 'string') firstValue = firstValue.replace('m','-');
     if(typeof(thirdValue) == 'string') thirdValue = thirdValue.replace('m','-');
@@ -203,7 +168,6 @@ function tryAction (firstValue, secondValue, thirdValue, action){
 
 function actionToArray(tempExpressionArray, action){
     let i = 0;
-    let debug = false;
 
     for (i; i < tempExpressionArray.length; i++) {
 
@@ -212,12 +176,11 @@ function actionToArray(tempExpressionArray, action){
         thirdValue = tempExpressionArray[i+2];
         
         answer = tryAction (firstValue, secondValue, thirdValue, action);
-        // if (answer !== null) console.log('answer: ' + answer);
+
         if (answer !== null) {
             tempExpressionArray[i] = null;
             tempExpressionArray[i+1] = null;
             tempExpressionArray[i+2] = answer;
-            if (debug)  console.log("tempExpressionToArray after action = " + tempExpressionArray);                            
         }
         
     }
@@ -227,12 +190,10 @@ function actionToArray(tempExpressionArray, action){
 
 function filterArray(tempExpressionArray){
     let filtered;
-    let debug = false;
 
     filtered = tempExpressionArray.filter(function (el) {
         return el != null;
       });
       
-      if(debug) console.log(filtered);
       return filtered;
 }
