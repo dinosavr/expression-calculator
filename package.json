@@ -4,6 +4,7 @@
   "description": "Calculator for expressions with nested brackets",
   "main": "test.js",
   "scripts": {
+    "lint": "eslint ./src --ext .js",
     "test": "mocha test.js"
   },
   "repository": {
@@ -18,6 +19,11 @@
   "homepage": "https://github.com/romacher/expression-calculator#readme",
   "devDependencies": {
     "chai": "^4.2.0",
+    "eslint": "^8.18.0",
+    "eslint-config-standard": "^17.0.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-n": "^15.2.3",
+    "eslint-plugin-promise": "^6.0.0",
     "mocha": "^6.2.0"
   }
 }

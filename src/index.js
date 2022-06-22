@@ -1,199 +1,121 @@
-function eval() {
-    // Do not use eval!!!
-    return;
-}
-
-function expressionCalculator(expr) {
-    // write your solution here
-    // rewrite action / *
-
-    let result;           
-
-    checkBrackets(expr);
-    
-    while (!checkSolvesReady(expr)) { // выводит 0, затем 1, затем 2
-        expr = getSimpleExpr(expr);
-      }
-    
-      if(typeof(expr) == 'string') expr = expr.replace('m','-');
-
-      result = parseFloat(expr);    
-
-    return result;
-}
-
+// Do not use eval!!!
 module.exports = {
-    expressionCalculator
+  expressionCalculator
 }
 
-function getSimpleExpr(expr){
+function expressionCalculator (expr) {
+  const sub = CONSTANTS.getMinusSymbol
+  const negativeSymbol = CONSTANTS.getNegativeSymbol
 
-    const STARTBRACKET = '(';
-    const ENDBRACKET = ')';
+  // более правильно проверка открытия закрытия скобок
+  checkPairOfBrackets(expr)
 
-    let currExpr = '';
-    let simpleExp = '';
-    let debug = false;
-    
+  while (!isExprHasOperation(expr)) {
+    expr = stepByStepCalcExpr(expr)
+  }
 
-     for (var i = 0; i < expr.length; i++) {
-        
-        if(expr.charAt(i) == STARTBRACKET) {
-            currExpr = currExpr + simpleExp; 
-            simpleExp = '';
-        }
-        
-        simpleExp = simpleExp + expr.charAt(i);
+  if (typeof (expr) === 'string') expr = expr.replace(negativeSymbol, sub)
 
-        if(expr.charAt(i) == ENDBRACKET) {
-        simpleExp = countSimpleExpr(simpleExp);   
-        currExpr = currExpr + simpleExp + getLastPartExpr(i+1, expr);
-        i = expr.length + 1;         
-        }
-
-        if(i == expr.length-1) currExpr = countSimpleExpr(simpleExp);   
+  const res = parseFloat(expr)
+  return res
 }
 
-return currExpr;
+function stepByStepCalcExpr (expr) {
+  const [openBracket, closeBracket] = CONSTANTS.getBrackets
+  let newExpr = ''
+  let noBracketsExp = ''
 
-}
-function getLastPartExpr(i, expr){
-    let lastPartOfExpr = '';
-    for (i; i < expr.length; i++) {
-        lastPartOfExpr = lastPartOfExpr + expr.charAt(i);
-};
-   return lastPartOfExpr;
-}
-function countSimpleExpr(expr)             {
-    const STARTBRACKET = '(';
-    const ENDBRACKET = ')';
-    const MULTISYMBOL = '*';
-    const DIVSYMOBL = '/';
-    const ADDSYMBOL = '+';
-    const SUBSYMBOL = '-';
-    
-    let debug = false;
-    
-tempExpressionArray = stringToArray(expr);    
-tempExpressionArray = actionToArray(tempExpressionArray, DIVSYMOBL);    
-tempExpressionArray = filterArray(tempExpressionArray);      
-
-tempExpressionArray = actionToArray(tempExpressionArray, ADDSYMBOL);    
-tempExpressionArray = filterArray(tempExpressionArray);       
-
-result = parseFloat(tempExpressionArray[0]);
-
-if(result < 0) result = 'm'+(-result);
-
-return result; 
-}
-
-function checkBrackets(expr) {
-    const STARTBRACKET = '(';
-    const ENDBRACKET = ')';
-
-    if(charCount(expr,STARTBRACKET) !== charCount(expr,ENDBRACKET)) throw("ExpressionError: Brackets must be paired");
-
-}
-
-function checkSolvesReady(expr) {
-    const STARTBRACKET = '(';
-    const ENDBRACKET = ')';
-    const MULTISYMBOL = '*';
-    const DIVSYMOBL = '/';
-    const ADDSYMBOL = '+';
-    const SUBSYMBOL = '-';
-
-    let ready=true;
-    let str = expr;    
-
-    for (var i = 0; i < str.length; i++) {
-    if (str[i] === STARTBRACKET) ready=false;
-    if (str[i] === ENDBRACKET) ready=false;
-    if (str[i] === MULTISYMBOL) ready=false;
-    if (str[i] === DIVSYMOBL) ready=false;
-    if (str[i] === ADDSYMBOL) ready=false;
-    if (str[i] === SUBSYMBOL) ready=false;
-
+  for (let i = 0; i < expr.length; i++) {
+    if (expr.charAt(i) === openBracket) {
+      newExpr = newExpr + noBracketsExp
+      noBracketsExp = ''
     }
 
-    return ready;
-}
+    noBracketsExp = noBracketsExp + expr.charAt(i)
 
-function charCount(str,chr) {
-    let count =0;
-    for (var i = 0; i < str.length; i++) {
-    if (str[i].toLowerCase() === chr.toLowerCase()) {
-    count++;
-    }
+    if (expr.charAt(i) === closeBracket) {
+      const resSimpleExp = countSimpleExpr(noBracketsExp)
+      newExpr = newExpr + resSimpleExp + expr.slice(i + 1)
+      const correctIndex = 1
+      i = expr.length + correctIndex
     }
 
-    return count;
-    }
+    const isLastCalc = i === expr.length - 1
+    if (isLastCalc) newExpr = countSimpleExpr(noBracketsExp)
+  }
 
-function stringToArray(expr){
-    let debug = false;
-    let splitSymbol = " ";
-    let tempExpression;
-
-    tempExpression = normalizeStringExpr(expr);
-    tempExpressionArray = tempExpression.split(splitSymbol);
-    
-    return tempExpressionArray;
+  return newExpr
 }
 
-function normalizeStringExpr(expr){
+function countSimpleExpr (noBracketsExp) {
+  const divSymbol = CONSTANTS.getDivSymbol
+  const addSymbol = CONSTANTS.getAddSymbol
+  const negativeSymbol = CONSTANTS.getNegativeSymbol
 
-    tempExpression = expr.replace(/\s/g, '');    
-    tempExpression = tempExpression.replace(/[\()]/g, "").replace(/[\)]/g, "").replace(/\+/g, " + ").replace(/\-/g, " - ").replace(/\*/g, " * ").replace(/[\/)]/g, " / ");
-
-    return tempExpression;
+  let exprArr = normalizeStringExpr(noBracketsExp).split(' ')
+  exprArr = actionToArray(exprArr, divSymbol).filter((el) => el != null)
+  const [firstItem] = actionToArray(exprArr, addSymbol).filter((el) => el != null)
+  const res = parseFloat(firstItem)
+  return (res < 0) ? `${negativeSymbol}${-res}` : res
 }
 
-function tryAction (firstValue, secondValue, thirdValue, action){
-
-    let answer = null;
-
-    if(typeof(firstValue) == 'string') firstValue = firstValue.replace('m','-');
-    if(typeof(thirdValue) == 'string') thirdValue = thirdValue.replace('m','-');
-
-      if((secondValue == '*') && (action == '/')) answer = (parseFloat(firstValue) * parseFloat(thirdValue));
-      if((secondValue == '/') && (action == '/') && parseFloat(thirdValue) == 0) throw "TypeError: Division by zero.";
-      if((secondValue == '/') && (action == '/')) answer = (parseFloat(firstValue) / parseFloat(thirdValue));
-      if((secondValue == '+') && (action == '+')) answer = (parseFloat(firstValue) + parseFloat(thirdValue));
-      if((secondValue == '-') && (action == '+')) answer = (parseFloat(firstValue) - parseFloat(thirdValue));
-
-      return answer;      
+function checkPairOfBrackets (expr) {
+  const [openBracket, closeBracket] = CONSTANTS.getBrackets
+  const isCountBracketsEqual = expr.split(openBracket).length === expr.split(closeBracket).length
+  if (!isCountBracketsEqual) throw new Error('ExpressionError: Brackets must be paired')
 }
 
-function actionToArray(tempExpressionArray, action){
-    let i = 0;
-
-    for (i; i < tempExpressionArray.length; i++) {
-
-        firstValue = tempExpressionArray[i];
-        secondValue = tempExpressionArray[i+1];
-        thirdValue = tempExpressionArray[i+2];
-        
-        answer = tryAction (firstValue, secondValue, thirdValue, action);
-
-        if (answer !== null) {
-            tempExpressionArray[i] = null;
-            tempExpressionArray[i+1] = null;
-            tempExpressionArray[i+2] = answer;
-        }
-        
-    }
-
-    return tempExpressionArray;
+function isExprHasOperation (expr) {
+  return !CONSTANTS.getOperation.some(item => (String(expr).indexOf(item) > -1))
 }
 
-function filterArray(tempExpressionArray){
-    let filtered;
+function normalizeStringExpr (expr) {
+  // add constants and rewrite this moment
+  const cleanExpr = expr.replace(/\s/g, '').replace(/[\\()]/g, '')
+  const normExpr = cleanExpr.replace(/\+/g, ' + ').replace(/-/g, ' - ').replace(/\*/g, ' * ').replace(/[/)]/g, ' / ')
+  return normExpr
+}
 
-    filtered = tempExpressionArray.filter(function (el) {
-        return el != null;
-      });
-      
-      return filtered;
+function tryOperation (minimalExpr, operation) {
+  let res = null
+  let [firstItem, secondItem, thirdItem] = minimalExpr
+  const [multi, division, add, sub] = ['*', '/', '+', '-']
+  const negativeSymbol = 'n'
+
+  if (typeof (firstItem) === 'string') firstItem = firstItem.replace(negativeSymbol, sub)
+  if (typeof (thirdItem) === 'string') thirdItem = thirdItem.replace(negativeSymbol, sub)
+
+  if ((secondItem === multi) && (operation === division)) res = (parseFloat(firstItem) * parseFloat(thirdItem))
+  if ((secondItem === division) && (operation === division) && parseFloat(thirdItem) === 0) throw new Error('TypeError: Division by zero.')
+  if ((secondItem === division) && (operation === division)) res = (parseFloat(firstItem) / parseFloat(thirdItem))
+  if ((secondItem === add) && (operation === add)) res = (parseFloat(firstItem) + parseFloat(thirdItem))
+  if ((secondItem === sub) && (operation === add)) res = (parseFloat(firstItem) - parseFloat(thirdItem))
+
+  return res
+}
+
+function actionToArray (exprArr, operation) {
+  exprArr.forEach((item, i) => {
+    const minimalExprSize = 3
+    const minimalExpr = exprArr.slice(i, i + minimalExprSize)
+    const resArr = tryOperation(minimalExpr, operation)
+    if (resArr !== null) exprArr.splice(i, minimalExprSize, null, null, resArr)
+  })
+  return exprArr
+}
+
+const CONSTANTS = {
+  brackets: ['(', ')'],
+  addSymbol: '+',
+  minusSymbol: '-',
+  multiSymbol: '*',
+  divSymbol: '/',
+  negativeSymbol: 'n',
+  get getBrackets () { return this.brackets },
+  get getAddSymbol () { return this.addSymbol },
+  get getMinusSymbol () { return this.minusSymbol },
+  get getMultiSymbol () { return this.multiSymbol },
+  get getDivSymbol () { return this.divSymbol },
+  get getOperation () { return [this.multiSymbol, this.divSymbol, this.addSymbol, this.minusSymbol] },
+  get getNegativeSymbol () { return this.negativeSymbol }
 }
