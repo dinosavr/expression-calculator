@@ -123,7 +123,7 @@ describe("Easy", function() {
     });
 });
  
-/* describe("Medium", function() {
+describe("Medium", function() {
     it("Brackets must be paired", function() {
         const expr = "1 + 2) * 3";
         expect(() => expressionCalculator(expr)).to.throw("ExpressionError: Brackets must be paired");
@@ -439,4 +439,4 @@ describe("Hard", function() {
         const result = 72.6846;
         expect(Number(expressionCalculator(expr).toFixed(4))).to.equal(result);
     });
-})  */
+})  

@@ -24,7 +24,6 @@ function expressionCalculator (expr) {
   const sub = CONSTANTS.getMinusSymbol
   const negativeSymbol = CONSTANTS.getNegativeSymbol
 
-  // более правильно проверка открытия закрытия скобок
   checkPairOfBrackets(expr)
 
   while (!isExprHasOperation(expr)) {
@@ -57,8 +56,6 @@ function stepByStepCalcExpr (expr) {
       newExpr = newExpr.slice(0, -1) + resSimpleExp + expr.slice(i + 1)
       noBracketsExp = ''
       return newExpr
-      // const correctIndex = 1
-      // i = expr.length + correctIndex
     }
 
     const isExprHasNotBrackets = i === expr.length - 1
@@ -134,7 +131,6 @@ function mayBeNegativeSymbolToMinus (mayNegative) {
   const minusSymbol = CONSTANTS.getMinusSymbol
   const negativeSymbol = CONSTANTS.getNegativeSymbol
   if (typeof (mayNegative) === 'string') mayNegative = mayNegative.replace(negativeSymbol, minusSymbol)
-
   return mayNegative
 }
 
